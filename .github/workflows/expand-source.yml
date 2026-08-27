@@ -1,0 +1,83 @@
+name: Expand Hossasi source archive
+
+
+
+on:
+
+  push:
+  
+    branches: [main]
+    
+
+
+permissions:
+
+  contents: write
+  
+
+
+jobs:
+
+  expand:
+  
+    if: "!contains(github.event.head_commit.message, 'Expand source archive')"
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+    
+      - name: Checkout
+      
+        uses: actions/checkout@v4
+        
+      - name: Expand source
+      
+        run: |
+        
+          rm -rf .source-expand
+          
+          mkdir .source-expand
+          
+          unzip -q hossasi_full_source.zip -d .source-expand
+          
+          cp -a .source-expand/. .
+          
+          rm -rf .source-expand hossasi_full_source.zip
+          
+      - name: Commit expanded source
+      
+        run: |
+        
+          git config user.name "github-actions[bot]"
+          
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          git add -A
+          
+          git commit -m "Expand source archive" || exit 0
+          
+          git push
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
