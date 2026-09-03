@@ -104,7 +104,6 @@ export interface AppSettings {
   autoGenerateSessions: boolean;
   lastAutoGenDate?: string;
   theme: 'light' | 'dark';
-  language: 'ar' | 'en';
 }
 
 export interface AppData {
@@ -124,7 +123,6 @@ export const DEFAULT_SETTINGS: AppSettings = {
   reportsButtonDay: 1,
   autoGenerateSessions: true,
   theme: 'dark',
-  language: 'ar',
 };
 
 const STORAGE_KEY = 'hossasi_data';

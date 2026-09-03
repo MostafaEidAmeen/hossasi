@@ -22,18 +22,6 @@ export default function HomeScreen() {
     return sum + sessions.reduce((instSum, s) => instSum + parseFloat(s.price || institute.defaultPrice || '0'), 0);
   }, 0);
 
-  const chartData = Array.from({ length: 7 }, (_, index) => {
-    const day = new Date();
-    day.setHours(0, 0, 0, 0);
-    day.setDate(day.getDate() - (6 - index));
-    const date = day.toISOString().slice(0, 10);
-    const value = data.sessions
-      .filter((session) => session.date === date && session.status === 'done' && !session.archived)
-      .reduce((sum, session) => sum + Number(session.price || 0), 0);
-    return { label: day.toLocaleDateString('ar', { weekday: 'short' }).replace('،', ''), value };
-  });
-  const maxChartValue = Math.max(...chartData.map((item) => item.value), 1);
-
   return (
     <ScreenContainer className="bg-[#0d0f1a]">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -47,7 +35,7 @@ export default function HomeScreen() {
               </Text>
             </View>
             <Pressable
-              onPress={() => router.push('/settings' as any)}
+              onPress={() => router.push('/settings')}
               className="w-11 h-11 rounded-full bg-[#181b2e] border border-[#1e2138] items-center justify-center active:opacity-70"
             >
               <Text className="text-lg">⚙️</Text>
@@ -99,32 +87,9 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          {/* Interactive Weekly Revenue Chart */}
-          <View className="bg-[#15182a] border border-[#282d4a] rounded-2xl p-4 mb-6">
-            <View className="flex-row items-center justify-between mb-4">
-              <View>
-                <Text className="text-sm font-bold text-white">أداء الإيرادات</Text>
-                <Text className="text-xs text-[#8f95b5] mt-1">آخر 7 أيام — اضغط على اليوم للتفاصيل</Text>
-              </View>
-              <View className="w-10 h-10 rounded-xl bg-[#7c6efa]/20 items-center justify-center">
-                <Text className="text-lg">📈</Text>
-              </View>
-            </View>
-            <View className="h-32 flex-row items-end justify-between gap-2">
-              {chartData.map((item) => (
-                <Pressable key={item.label} className="flex-1 items-center justify-end" style={({ pressed }) => [{ opacity: pressed ? 0.65 : 1 }]}>
-                  <View className="w-full items-center justify-end h-24">
-                    <View className="w-5 rounded-t-lg bg-[#7c6efa]" style={{ height: Math.max(item.value > 0 ? (item.value / maxChartValue) * 88 : 5, 5) }} />
-                  </View>
-                  <Text className="text-[10px] text-[#8f95b5] mt-2">{item.label}</Text>
-                </Pressable>
-              ))}
-            </View>
-          </View>
-
           {/* Weekly Schedule Shortcut */}
           <Pressable
-            onPress={() => router.push('/schedule' as any)}
+            onPress={() => router.push('/schedule')}
             className="bg-gradient-to-br from-[#181b2e] to-[#1e2138] border border-[#1e2138] rounded-2xl p-4 flex-row items-center gap-4 active:opacity-80"
           >
             <View className="w-14 h-14 rounded-xl bg-[#60a5fa] bg-opacity-20 items-center justify-center">
@@ -139,7 +104,7 @@ export default function HomeScreen() {
 
           {/* Daily Tracking Shortcut */}
           <Pressable
-            onPress={() => router.push('/daily-tracking' as any)}
+            onPress={() => router.push('/daily-tracking')}
             className="bg-gradient-to-br from-[#181b2e] to-[#1e2138] border border-[#1e2138] rounded-2xl p-4 flex-row items-center gap-4 active:opacity-80 mt-3"
           >
             <View className="w-14 h-14 rounded-xl bg-[#34d399] bg-opacity-20 items-center justify-center">

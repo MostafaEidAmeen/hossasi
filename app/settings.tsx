@@ -13,7 +13,6 @@ import {
   requestNotificationPermission,
 } from '@/lib/notifications';
 import { useThemeContext } from '@/lib/theme-provider';
-import { useI18n } from '@/lib/i18n';
 
 const WA_COUNTRY_CODES = [
   { name: 'مصر', code: '20' },
@@ -45,7 +44,7 @@ function Toggle({ on, onPress }: { on: boolean; onPress: () => void }) {
   );
 }
 
-function SectionTitle({ children }: { children: React.ReactNode }) {
+function SectionTitle({ children }: { children: string }) {
   return (
     <Text className="text-[11px] font-bold text-[#636685] uppercase tracking-widest mt-6 mb-2">
       {children}
@@ -57,7 +56,6 @@ export default function SettingsScreen() {
   const { data, updateSettings, replaceAllData, deleteAllData, saveData, generateTodaySessions } = useAppContext();
   const { showToast } = useToast();
   const { colorScheme, setColorScheme } = useThemeContext();
-  const { language, t } = useI18n();
   const settings = data.settings!;
 
   const [reportsModalVisible, setReportsModalVisible] = useState(false);
@@ -206,35 +204,11 @@ export default function SettingsScreen() {
         >
           <Text className="text-[#a0a4c0] text-lg">→</Text>
         </Pressable>
-        <Text className="text-xl font-bold text-[#eceef8]">{t('settings')}</Text>
+        <Text className="text-xl font-bold text-[#eceef8]">الإعدادات</Text>
       </View>
 
       <ScrollView className="flex-1 px-4" contentContainerStyle={{ paddingBottom: 32 }}>
-        <SectionTitle>🌐 {t('language')}</SectionTitle>
-        <View className="bg-[#181b2e] border border-[#1e2138] rounded-2xl px-4 py-3">
-          <View className="flex-row gap-2">
-            {(['ar', 'en'] as const).map((value) => (
-              <Pressable
-                key={value}
-                onPress={async () => {
-                  updateSettings({ language: value });
-                  await saveData();
-                  showToast(value === 'ar' ? 'تم اختيار العربية' : 'English selected', 'success');
-                }}
-                className={`flex-1 py-2 rounded-lg border items-center ${language === value ? 'bg-[#7c6efa] border-[#7c6efa]' : 'bg-[#111320] border-[#1e2138]'}`}
-              >
-                <Text className={`text-xs font-bold ${language === value ? 'text-white' : 'text-[#a0a4c0]'}`}>
-                  {value === 'ar' ? t('arabic') : t('english')}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-          <Text className="text-[10px] text-[#636685] mt-2">
-            الترجمة تُطبّق تدريجيًا على واجهات التطبيق، وسيتم توسيع القاموس مع إضافة الشاشات.
-          </Text>
-        </View>
-
-        <SectionTitle>🎨 {t('appearance')}</SectionTitle>
+        <SectionTitle>🎨 المظهر</SectionTitle>
         <View className="bg-[#181b2e] border border-[#1e2138] rounded-2xl px-4 py-3">
           <View className="flex-row gap-2">
             <Pressable
@@ -282,12 +256,12 @@ export default function SettingsScreen() {
           <Text className="text-sm font-bold text-[#b39dff]">🔄 توليد حصص اليوم الآن</Text>
         </Pressable>
 
-        <SectionTitle>🔔 {t('notifications')}</SectionTitle>
+        <SectionTitle>🔔 الإشعارات</SectionTitle>
         <View className="bg-[#181b2e] border border-[#1e2138] rounded-2xl px-4">
           <View className="flex-row items-center justify-between gap-3 py-3 border-b border-[#1e2138]">
             <View className="flex-1">
-              <Text className="text-sm font-bold text-[#eceef8]">{t('sessionReminders')}</Text>
-              <Text className="text-xs text-[#636685] mt-0.5">{t('sessionRemindersDescription')}</Text>
+              <Text className="text-sm font-bold text-[#eceef8]">تذكير حصص اليوم</Text>
+              <Text className="text-xs text-[#636685] mt-0.5">تنبيه قبل الحصة بساعة، وتنبيه ثانٍ قبلها بنص ساعة</Text>
             </View>
             <Toggle on={settings.notifySessions} onPress={() => toggle('notifySessions')} />
           </View>
@@ -310,13 +284,13 @@ export default function SettingsScreen() {
         </View>
 
         <Text className="text-[11px] font-bold text-[#636685] uppercase tracking-widest mt-4 mb-2">
-          🧪 {t('testNotifications')}
+          🧪 اختبار الإشعارات
         </Text>
         <Pressable
           onPress={handleTestNotification}
           className="bg-[#181b2e] border border-[#1e2138] rounded-xl py-3 flex-row items-center justify-center gap-2 active:opacity-80"
         >
-          <Text className="text-sm font-bold text-[#b39dff]">▶️ {t('sendTestNotification')}</Text>
+          <Text className="text-sm font-bold text-[#b39dff]">▶️ إرسال إشعار تجريبي الآن</Text>
         </Pressable>
 
         <SectionTitle>💬 الواتساب</SectionTitle>

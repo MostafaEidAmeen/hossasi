@@ -85,8 +85,6 @@ const config: ExpoConfig = {
   },
   plugins: [
     "expo-router",
-    "expo-font",
-    "expo-web-browser",
     [
       "expo-splash-screen",
       {
@@ -124,11 +122,6 @@ const config: ExpoConfig = {
   experiments: {
     typedRoutes: true,
     reactCompiler: true,
-  },
-  extra: {
-    eas: {
-      projectId: 'ea2b60a2-c7c7-4f1e-a99d-5d49b3b058d5',
-    },
   },
 };
 

@@ -4,7 +4,6 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { Alert } from 'react-native';
 import 'react-native-reanimated';
-import '../global.css';
 
 import { ThemeProvider } from '@/lib/theme-provider';
 import { AppProvider, useAppContext } from '@/lib/app-context';
@@ -14,26 +13,29 @@ import { applyRTLAndCheckIfJustEnabled } from '@/lib/rtl';
 
 SplashScreen.preventAutoHideAsync();
 
+// Must run at module scope (before RootLayout ever renders) — I18nManager reads
+// this native flag very early in the layout pipeline, well before any useEffect
+// would fire. See lib/rtl.ts for why this can't take effect until next restart.
 const rtlJustEnabled = applyRTLAndCheckIfJustEnabled();
 
 function RootLayoutContent() {
   const { isAuthenticated, data, isLoading, generateTodaySessions, updateSettings, saveData } = useAppContext();
 
+  // Re-arm today's session reminders whenever the app opens with the setting on —
+  // scheduleSessionReminders() is idempotent per session id, so this is safe to repeat.
   useEffect(() => {
     if (!isAuthenticated || isLoading) return;
     if (!data.settings?.notifySessions) return;
     (async () => {
-      try {
-        const granted = await requestNotificationPermission();
-        if (!granted) return;
-        const pending = data.sessions.filter((s) => s.status === 'pending');
-        await scheduleAllPendingReminders(pending);
-      } catch (error) {
-        console.warn('Notification scheduling skipped:', error);
-      }
+      const granted = await requestNotificationPermission();
+      if (!granted) return;
+      const pending = data.sessions.filter(s => s.status === 'pending');
+      await scheduleAllPendingReminders(pending);
     })();
-  }, [isAuthenticated, isLoading, data.sessions, data.settings?.notifySessions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, isLoading]);
 
+  // Auto-generate today's sessions from recurring schedules — once per calendar day.
   useEffect(() => {
     if (!isAuthenticated || isLoading) return;
     if (!data.settings?.autoGenerateSessions) return;
@@ -42,14 +44,25 @@ function RootLayoutContent() {
     generateTodaySessions();
     updateSettings({ lastAutoGenDate: today });
     saveData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, isLoading]);
 
   return (
-    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#0d0f1a' } }}>
+    <Stack>
       {!isAuthenticated ? (
-        <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="login"
+          options={{
+            headerShown: false,
+          }}
+        />
       ) : (
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="(tabs)"
+          options={{
+            headerShown: false,
+          }}
+        />
       )}
     </Stack>
   );
@@ -59,7 +72,9 @@ export default function RootLayout() {
   const [loaded] = useFonts({});
 
   useEffect(() => {
-    if (loaded) SplashScreen.hideAsync();
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
   }, [loaded]);
 
   useEffect(() => {
